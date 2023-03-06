@@ -5,9 +5,9 @@
 
 // Pins
 constexpr int MQ135_PIN = A0;
-constexpr int LED_PIN = 4;
-constexpr int BUZZER_PIN = 3;
 constexpr int DHT_PIN = 2;
+constexpr int BUZZER_PIN = 3;
+constexpr int LED_PIN = 4;
 constexpr int QD_PIN = 9;
 
 // Object
@@ -32,56 +32,95 @@ void loop() {
   dhtTC = dht.getTemperatureC();
   dhtHU = dht.getHumidity();
   mqCO = mq135.readCO2();
-  
-  if (dhtTC < 16 && dhtHU < 15) {
+
+  if (dhtTC < 16) {
     digitalWrite(LED_PIN, HIGH);
     qd.displayTemperatureC(dhtTC);
     delay(3000);
     digitalWrite(LED_PIN, LOW);
     qd.displayHumidity(dhtHU);
     delay(3000);
-  } else if (dhtTC > 25 && dhtHU > 75) {
+    if (dhtHU < 15) {
+      digitalWrite(LED_PIN, HIGH);
+      qd.displayTemperatureC(dhtTC);
+      delay(2500);
+      
+      digitalWrite(LED_PIN, LOW);
+      qd.displayHumidity(dhtHU);
+      delay(2500);
+    }
+  } else if (dhtTC > 25) {
     digitalWrite(LED_PIN, HIGH);
     qd.displayTemperatureC(dhtTC);
     tone(BUZZER_PIN, 4000);
     delay(3000);
+    
     digitalWrite(LED_PIN, LOW);
     qd.displayHumidity(dhtHU);
     tone(BUZZER_PIN, 4000);
     delay(3000);
+    
     digitalWrite(LED_PIN, HIGH);
     qd.displayInt(mqCO);
     tone(BUZZER_PIN, 4000);
     delay(3000);
+    
     digitalWrite(LED_PIN, LOW);
     qd.displayClear();
     tone(BUZZER_PIN, 4000);
     delay(3000);
     
-    if (mqCO > 1199) {
+    if (dhtHU > 75) {
       digitalWrite(LED_PIN, HIGH);
       qd.displayTemperatureC(dhtTC);
       tone(BUZZER_PIN, 4000);
-      delay(3000);
+      delay(1500);
+      
       digitalWrite(LED_PIN, LOW);
       qd.displayHumidity(dhtHU);
       tone(BUZZER_PIN, 4000);
-      delay(3000);
+      delay(1500);
+      
       digitalWrite(LED_PIN, HIGH);
       qd.displayInt(mqCO);
       tone(BUZZER_PIN, 4000);
-      delay(3000);
+      delay(1500);
+      
       digitalWrite(LED_PIN, LOW);
       qd.displayClear();
       tone(BUZZER_PIN, 4000);
-      delay(3000);
+      delay(1500);
+      
+      if (mqCO > 1199) {
+        digitalWrite(LED_PIN, HIGH);
+        qd.displayTemperatureC(dhtTC);
+        tone(BUZZER_PIN, 4000);
+        delay(3000);
+
+        digitalWrite(LED_PIN, LOW);
+        qd.displayHumidity(dhtHU);
+        tone(BUZZER_PIN, 4000);
+        delay(3000);
+
+        digitalWrite(LED_PIN, HIGH);
+        qd.displayInt(mqCO);
+        tone(BUZZER_PIN, 4000);
+        delay(3000);
+
+        digitalWrite(LED_PIN, LOW);
+        qd.displayClear();
+        tone(BUZZER_PIN, 4000);
+        delay(3000);
+      }
     }
   } else {
     //OutputOfVariablesToTheDisplay
     qd.displayTemperatureC(dhtTC);
     delay(3000);
+
     qd.displayHumidity(dhtHU);
     delay(3000);
+
     qd.displayInt(mqCO);
     delay(3000);
   }
